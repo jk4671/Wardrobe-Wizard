@@ -1,0 +1,630 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="chat-container d-flex">
+            <img src="static/icons/wizard.png" alt="Wizard Icon" class="wizard-icon">
+
+            <div class="container mt-5 chatbox">
+                <div class="card shadow-sm chat-window">
+                    <div class="card-body">
+                        <div class="chat-messages" id="chat-messages">
+                            <!-- Chat messages will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Loading Spinner Overlay -->
+<div id="loadingOverlay" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
+
+
+<script>
+    var data = {{ data | tojson }};
+    var fashionCores = {{ fashion_cores | tojson }};
+    var gender = data.gender;
+
+    $(document).ready(function () {
+        // Show the initial occasion input section
+        showOccasionInputSection();
+
+        // Function to handle occasion input submission using Enter key
+        $(document).on('keypress', '#occasion_input', function (e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                $("#submit_occasion_btn").click();  // Trigger the submit button click
+            }
+        });
+    });
+
+    // Function to display the occasion input section
+    function showOccasionInputSection() {
+        const occasionInputHTML = `
+            <div class="message system">
+                <div class="message-content">
+                    <p>👋 Hi! What occasion would you like to dress for?</p>
+                </div>
+            </div>
+            <div class="message user" id="occasion-input-section">
+                <div class="message-content">
+                    <textarea id="occasion_input" class="form-control mb-2" rows="6"
+                        placeholder="Example: 2024 New York City Marathon on Sunday, November 3, 2024 in 53° F weather"></textarea>
+                    <button id="submit_occasion_btn" class="btn mt-2 send-submit" disabled>Submit</button>
+                </div>
+            </div>`;
+
+        $("#chat-messages").html(occasionInputHTML);  // Insert occasion input section
+        
+        const $occasionInput = $("#occasion_input");
+        const $submitButton = $("#submit_occasion_btn");
+
+        $occasionInput.on("input", function () {
+            const text = $occasionInput.val().trim();
+            $submitButton.prop("disabled", text.length === 0);
+        });
+        // Occasion submit button click handler
+        $("#submit_occasion_btn").click(function () {
+            let occasion = $("#occasion_input").val().trim();
+            if (occasion) {
+                submitOccasion(occasion);
+            } else {
+                alert("Please enter an occasion.");
+            }
+        });
+
+        scrollToBottom();  // Scroll to the bottom after adding the occasion input section
+    }
+
+    function submitOccasion(occasion) {
+        $.ajax({
+            type: "POST",
+            url: "/submit_occasion",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ "occasion": occasion }),
+            success: function (updatedData) {
+                data = updatedData;
+                $("#occasion-input-section").hide();
+                appendMessage("user", occasion);
+                appendMessage("system", "Got it! Now, please provide your personal details.");
+                showPersonalDetails();
+            },
+            error: function () {
+                console.error("Error submitting occasion");
+            }
+        });
+    }
+
+    function showPersonalDetails() {
+    const personalDetailsHTML = `
+        <div class="message user" id="personal-detail">
+            <div class="message-content">
+                <label for="gender_input" class="form-label">Gender:</label>
+                <select id="gender_input" class="form-select mb-2">
+                    <option value="">Select Gender</option>
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                </select>
+                <label for="age_input" class="form-label">Age:</label>
+                <input type="number" id="age_input" class="form-control mb-2" min="1" max="120" placeholder="Enter your age">
+                <label for="outfit_type_input" class="form-label">Outfit Type:</label>
+                <select id="outfit_type_input" class="form-select mb-2">
+                    <option value="">Select Outfit Type</option>
+                    <option value="Athleisure">Athleisure</option>
+                    <option value="High Fashion">High Fashion</option>
+                    <option value="Everyday Clothes">Everyday Clothes</option>
+                    <option value="Semi-Formal">Semi-Formal</option>
+                    <option value="Formal">Formal</option>
+                    <option value="Smart Casual">Smart Casual</option>
+                </select>
+                <button id="submit_details_btn" class="btn mt-2 send-submit" disabled>Submit</button>
+            </div>
+        </div>`;
+
+    $("#chat-messages").append(personalDetailsHTML);
+    scrollToBottom();
+
+    // Select input elements and button
+    const $genderInput = $("#gender_input");
+    const $ageInput = $("#age_input");
+    const $outfitTypeInput = $("#outfit_type_input");
+    const $submitButton = $("#submit_details_btn");
+
+    // Function to validate inputs
+    function validateInputs() {
+        const gender = $genderInput.val();
+        const age = $ageInput.val().trim();
+        const outfitType = $outfitTypeInput.val();
+        const isValid = gender && age && outfitType; // Ensure all fields are filled
+        $submitButton.prop("disabled", !isValid); // Enable or disable the button
+    }
+
+    // Attach input event listeners for validation
+    $genderInput.on("change", validateInputs);
+    $ageInput.on("input", validateInputs);
+    $outfitTypeInput.on("change", validateInputs);
+
+    // Submit button click handler
+    $submitButton.click(function () {
+        const gender = $genderInput.val();
+        const age = $ageInput.val().trim();
+        const outfitType = $outfitTypeInput.val();
+
+        if (gender && age && outfitType) {
+            submitDetails(gender, age, outfitType);
+        } else {
+            alert("Please fill out all fields.");
+        }
+    });
+}
+
+    function submitDetails(gender, age, outfitType) {
+        $.ajax({
+            type: "POST",
+            url: "/submit_details",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ "gender": gender, "age": age, "outfit_type": outfitType }),
+            success: function (updatedData) {
+                data = updatedData;
+                $('#personal-detail').remove();
+                const personalDetailsHTML = `
+                        <p><strong>Gender:</strong> ${gender}</p>
+                        <p><strong>Age:</strong> ${age}</p>
+                        <p><strong>Outfit Type:</strong> ${outfitType}</p>
+                `;
+                appendMessage("user", personalDetailsHTML);
+                // appendMessage("system", "Thank you! Please select your fashion core.");
+                // showFashionCores();
+                appendMessage("system", "Thank you! Please insert an image of an item in your closet.");
+                showImageUploadSection();
+            },
+            error: function () {
+                console.error("Error submitting details");
+            }
+        });
+    }
+
+    function showImageUploadSection() {
+        const imageUploadHTML = `
+            <div class="message user" id="image-upload-section">
+                <div class="message-content">
+                    <div id="drop-area" class="drop-area">
+
+                        <p id="proprietary-note" class="note"><strong>Note:</strong> Do not upload images containing proprietary information.</p>
+                        <img src="static/icons/upload.png" id="upload-icon" class="upload-icon" alt="Upload Icon">
+            
+                        <p id="drop-instructions">Drag and Drop or Click Here</p>
+                        <input type="file" id="closet_image_input" class="file-input" accept="image/*">
+                        <img id="image-preview" class="image-preview" style="display:none;" alt="Uploaded preview">
+                    </div>
+                    <button id="submit_image_btn" class="btn mt-2 send-submit" disabled>Submit</button>
+                </div>
+            </div>`;
+
+        $("#chat-messages").append(imageUploadHTML);
+        scrollToBottom();
+
+        const dropArea = document.getElementById("drop-area");
+        const fileInput = document.getElementById("closet_image_input");
+        const imagePreview = document.getElementById("image-preview");
+        const dropInstructions = document.getElementById("drop-instructions");
+
+        // Highlight drop area when dragging
+        ["dragenter", "dragover"].forEach(eventName => {
+            dropArea.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropArea.classList.add("highlight");
+            });
+        });
+
+        ["dragleave", "drop"].forEach(eventName => {
+            dropArea.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropArea.classList.remove("highlight");
+            });
+        });
+
+        // Handle dropped files
+        dropArea.addEventListener("drop", e => {
+            fileInput.files = e.dataTransfer.files; // Set the dropped files to the file input
+            displayImagePreview(fileInput.files[0]);
+            enableUploadButton();
+        });
+
+        // Handle click on drop area to trigger file input
+        dropArea.addEventListener("click", () => {
+            fileInput.click(); // Simulate a click on the hidden file input
+        });
+
+        // Handle file selection via input
+        fileInput.addEventListener("change", () => {
+            const file = fileInput.files[0];
+            if (file) {
+                displayImagePreview(file);
+            }
+            enableUploadButton();
+        });
+
+        function enableUploadButton() {
+            const file = fileInput.files[0];
+            if (file) {
+                $("#submit_image_btn").prop("disabled", false); // Enable upload button
+            } else {
+                $("#submit_image_btn").prop("disabled", true); // Disable upload button
+            }
+        }
+
+        function displayImagePreview(file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+
+                const imagePreview = document.getElementById("image-preview");
+                const dropInstructions = document.getElementById("drop-instructions");
+                const uploadIcon = document.getElementById("upload-icon");
+                const proprietarynote = document.getElementById("proprietary-note");
+
+
+                // Display the uploaded image preview
+                imagePreview.src = e.target.result; // Set the image source to the uploaded file
+                imagePreview.style.display = "block"; // Show the image preview
+
+                // Remove the upload icon
+                if (uploadIcon) {
+                    uploadIcon.remove();
+                }
+
+                if (proprietarynote) {
+                    proprietarynote.remove();
+                }
+
+                // Hide the instructions
+                dropInstructions.style.display = "none";
+            };
+            reader.readAsDataURL(file);
+        }
+
+        $("#submit_image_btn").click(function () {
+            const file = fileInput.files[0];
+            if (file) {
+                uploadImage(file);
+            } else {
+                alert("Please select an image to upload.");
+            }
+        });
+    }
+
+    function uploadImage(file) {
+        const formData = new FormData();
+        formData.append("image", file);
+
+        showLoading(); // Show the loading spinner
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const imageBase64 = e.target.result;
+
+            $.ajax({
+                type: "POST",
+                url: "/upload_image",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    hideLoading(); // Hide the loading spinner on success
+
+                    data = response.meta_data;
+                    console.log("Server response:", response); // Log the response for debugging
+
+                    if (response.error) {
+                        console.error("Error from server:", response.error);
+                        alert("Failed to process image. Please try again.");
+                        return;
+                    }
+
+                    const identifiedItem = response.clothing_item;
+                    if (!identifiedItem) {
+                        alert("No item identified. Please try a different image.");
+                        return;
+                    }
+
+                    // Hide the image upload section
+                    $("#image-upload-section").remove();
+
+                    // Display the uploaded image and identified item in chat
+                    appendMessage(
+                        "user",
+                        `<img src="${imageBase64}" class="img-fluid centered-image" alt="Uploaded item">`
+                    );
+
+                    // Confirmation message with identified item
+                    appendMessage(
+                        "system",
+                        `I see that you have uploaded an image of <strong>${identifiedItem}</strong>. Is this correct?`
+                    );
+
+                     // Ensure the scroll happens after both messages are appended
+                    setTimeout(scrollToBottom, 0);
+
+                    // Show confirmation buttons
+                    showConfirmationButtonsOutfit(identifiedItem);
+                },
+                error: function (xhr, status, error) {
+                    hideLoading(); // Hide the loading spinner on error
+                    console.error("Error uploading image:", error);
+                    alert("Failed to upload the image. Please try again.");
+                }
+            });
+        };
+
+        reader.readAsDataURL(file); // Convert the file to base64 for preview
+    }
+
+
+
+    function showConfirmationButtonsOutfit(identifiedItem) {
+        const confirmationHTML = `
+            <div class="message user" id="confirmation-buttons">
+                <div class="message-content">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button class="btn confirm-yes-btn btn-correct mb-2">Correct</button>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="btn confirm-no-btn btn-incorrect">Incorrect</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        $("#chat-messages").append(confirmationHTML);
+        scrollToBottom();
+
+        $(".confirm-yes-btn").click(function () {
+            // User confirms the identified clothing item
+            $("#confirmation-buttons").remove();
+            appendMessage("user", "Correct");
+
+            // Proceed to fashion core selection
+            appendMessage(
+                "system",
+                "Thank you for confirming! Please select your fashion core."
+            );
+            showFashionCores();
+        });
+
+        $(".confirm-no-btn").click(function () {
+            // User rejects the identified clothing item
+            $("#confirmation-buttons").remove();
+            appendMessage("user", "No");
+
+            // Ask the user to re-upload the image
+            appendMessage(
+                "system",
+                "Sorry about that. Please upload the image again for identification."
+            );
+            showImageUploadSection();
+        });
+    }
+
+
+    function showFashionCores() {
+        if ($("#fashion_cores_buttons_container").length === 0) {
+            let fashionCoreHTML = `
+                <div class="message user" id="fashion_core_selection">
+                    <div class="message-content">
+                        <div id="fashion_cores_buttons_container" class="row"></div>
+                    </div>
+                </div>`;
+            $("#chat-messages").append(fashionCoreHTML);
+        }
+
+        populateFashionCoreButtons();
+        scrollToBottom();
+    }
+
+    function populateFashionCoreButtons() {
+        $("#fashion_cores_buttons_container").empty();
+        $.each(fashionCores, function (key) {
+            let button = `
+                <div class="col-md-4 mb-3">
+                    <button class="btn btn-info select-core-btn" data-core="${key}">${key}</button>
+                </div>`;
+            $("#fashion_cores_buttons_container").append(button);
+        });
+
+        $(".select-core-btn").click(function () {
+            let selectedCore = $(this).data("core");
+
+            $.ajax({
+                type: "POST",
+                url: "/select_core",
+                contentType: "application/json",
+                data: JSON.stringify({ core: selectedCore }),
+                success: function (response) {
+                    data = response.meta_data
+                    // If the server responds successfully, show the fashion core details
+                    showFashionCoreDetails(selectedCore);
+                },
+                error: function () {
+                    console.error("Error selecting core");
+                }
+            });
+        });
+        scrollToBottom();
+    }
+
+    function showFashionCoreDetails(coreKey) {
+        console.log(data);
+        let selectedCore = fashionCores[coreKey];
+        let gender = data.gender ? data.gender.toLowerCase() : "male";
+        let timestamp = new Date().getTime(); // Unique timestamp
+        let selectedCoreImage = `${selectedCore.Images[gender]}?t=${timestamp}`;
+
+        const coreDetailsHTML = `
+            <div class="message user" id="fashion_core_details">
+                <div class="message-content">
+                    <p>I want <strong> ${coreKey}</strong></p>
+                </div>
+            </div>
+            <div class="message system" id="fashion_core_details">
+                <div class="message-content">
+                    <p>This is <strong>${coreKey}</strong></p>
+                    <img src="${selectedCoreImage}" class="img-fluid mb-2 fashion-core-img" alt="${coreKey} image">
+                    <p><strong>Aesthetic:</strong> ${selectedCore.Aesthetic}</p>
+                    <p><strong>Elements:</strong> ${selectedCore.Elements}</p>
+                    <p><strong>Colors:</strong> ${selectedCore.Colors}</p>
+                </div>
+            </div>
+            <div class="message system" id="happy-selection">
+                <div class="message-content">
+                    <p>Are you happy with this selection?</p>
+                </div>
+            </div>
+            <div class="message user" id="core-confirm">
+                <div class="message-content">
+                    <div class="row">
+                        <div class="col-md-6">
+                        <button class="btn confirm-core-btn mb-2 btn-correct" id="confirm-core-btn" data-core="${coreKey}">Yes, I like this</button>
+                        </div>
+                        <div class="col-md-6">
+                        <button class="btn btn-danger reselect-core-btn btn-incorrect" data-core="${coreKey}">No, let me choose another</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+        $("#fashion_core_selection").remove();
+        $("#chat-messages").append(coreDetailsHTML);
+
+        $(".confirm-core-btn").click(function () {
+            // Remove the confirmation buttons and happy selection message
+            $("#core-confirm").remove();
+            $("#happy-selection").remove();
+            $("#fashion_core_details").remove();
+
+
+            // Display the fashion core details immediately after the user's confirmation
+            let selectedCore = fashionCores[coreKey];
+            let gender = data.gender ? data.gender.toLowerCase() : "male";
+            let selectedCoreImage = selectedCore.Images[gender];
+
+            const coreDetailsHTMLUser = `
+                <div class="message user" id="fashion_core_details_user">
+                    <div class="message-content">
+                        <p>Yes, I like <strong>${coreKey}</strong></p>
+                        <img src="${selectedCoreImage}" class="img-fluid mb-2 fashion-core-img" alt="${coreKey} image">
+                        <p><strong>Aesthetic:</strong> ${selectedCore.Aesthetic}</p>
+                        <p><strong>Elements:</strong> ${selectedCore.Elements}</p>
+                        <p><strong>Colors:</strong> ${selectedCore.Colors}</p>
+                    </div>
+                </div>
+            `;
+
+            // Append the fashion core details
+            $("#chat-messages").append(coreDetailsHTMLUser);
+
+            // Proceed to the confirmation buttons for generating the outfit
+            showConfirmationButtons(coreKey);
+            scrollToBottom();
+        });
+
+        $(".reselect-core-btn").click(function () {
+            $("#core-confirm").remove();
+            $("#fashion_core_details").remove();
+
+            appendMessage("user", "No, let me choose another");
+            appendMessage("system", "Alright, please reselect your fashion core.");
+            showFashionCores();
+        });
+    }
+
+
+
+    function showConfirmationButtons(coreKey) {
+        $("#fashion_core_details").remove();
+        const confirmButtonHTML = `
+            <div class="message system">
+                <div class="message-content">
+                    <p>Would you like to generate the outfit based on these selections?</p>
+                </div>
+            </div>
+            <div class="message user">
+                <div class="message-content">
+                    <div class="row">
+                        <div class="col-md-6">
+                    <button id="confirm_generation_btn" class="btn confirm-core-btn mb-2 btn-correct">Yes, generate outfit</button>
+                    </div>
+                    <div class="col-md-6">
+                    <button id="cancel_generation_btn" class="btn btn-danger reselect-core-btn mb-2 btn-incorrect">No, restart the chat</button>
+                        </div>
+                    </div>
+                    </div>
+            </div>`;
+
+        $("#chat-messages").append(confirmButtonHTML);
+        scrollToBottom();
+
+        $("#confirm_generation_btn").click(function () {
+            showLoading(); // Show the loading spinner
+            setTimeout(() => {
+                window.location.href = "/summary";
+            }, 100); // Ensure the spinner is visible before redirection
+        });
+
+        $("#cancel_generation_btn").click(function () {
+            $("#confirm_generation_btn").parent().parent().remove();
+            appendMessage("user", "No, let me redo.");
+            showOccasionInputSection();
+
+        });
+    }
+
+    function appendMessage(sender, text) {
+        const message = `<div class="message ${sender}">
+                            <div class="message-content">
+                                <p>${text}</p>
+                            </div>
+                         </div>`;
+        $("#chat-messages").append(message);
+
+        // Wait for the DOM to update before scrolling
+        setTimeout(() => {
+            scrollToBottom();
+        }, 0);
+    }
+
+    function scrollToBottom() {
+        const chatWindow = $(".chat-window");
+        chatWindow.scrollTop(chatWindow[0].scrollHeight);
+        // Force repaint
+        chatWindow[0].offsetHeight;
+        setTimeout(() => {
+            chatWindow.scrollTop(chatWindow[0].scrollHeight);
+        }, 50);
+    }
+
+
+    function showLoading() {
+        $("#loadingOverlay").show();
+    }
+
+    function hideLoading() {
+        $("#loadingOverlay").hide();
+    }
+</script>
+
+{% endblock %}

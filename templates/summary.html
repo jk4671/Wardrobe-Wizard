@@ -1,0 +1,399 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Left Column: Summary of User Selection -->
+        <div class="col-md-3">
+
+
+            <div class="card mb-4">
+                <div class="card-body left-card-body">
+                    <h6 class="card-title"><strong>Item In Your Closet</strong></h6>
+                    {% if data.uploaded_image %}
+                    <img src="{{ data.uploaded_image }}" class="img-fluid mb-3" alt="Uploaded Closet Item">
+                    {% else %}
+                    <p>No image uploaded yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body left-card-body">
+                    <h6 class="card-title"><strong>Personal Details</strong></h6>
+                    
+                    <p>
+                        <span class="wizard-text-bold">Gender:</span> 
+                        <span class="wizard-text-summary">{{ data.gender }}</span>
+                    </p>
+                    <p>
+                        <span class="wizard-text-bold">Age:</span> 
+                        <span class="wizard-text-summary">{{ data.age }}</span>
+                    </p>
+                    <p>
+                        <span class="wizard-text-bold">Outfit Type:</span> 
+                        <span class="wizard-text-summary">{{ data.outfit_type }}</span>
+                    </p>
+
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body left-card-body">
+                    <h6 class="card-title"><strong>Occasion</strong></h6>
+                    <div class="wizard-text-summary"><p>{{ data.occasion }}</p></div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body left-card-body">
+                    <h6 class="card-title"><strong>Fashion Core</strong></h6>
+                  
+                    <p>
+                        <span class="wizard-text-bold">Core:</span>
+                        <span class="wizard-text-summary">{{ data.core }}</span>
+                    </p>
+                    {% if data.core in fashion_cores %}
+                    {% set gender = data.gender.lower() if data.gender else "male" %}
+                    <img src="{{ fashion_cores[data.core].Images.get(gender) }}" class="img-fluid mb-3"
+                        alt="{{ data.core }} image">
+                        <p>
+                            <span class="wizard-text-bold">Aesthetic:</span>
+                            <span class="wizard-text-summary">{{ fashion_cores[data.core].Aesthetic }}</span>
+                        </p>
+                        <p>
+                            <span class="wizard-text-bold">Elements:</span>
+                            <span class="wizard-text-summary">{{ fashion_cores[data.core].Elements }}</span>
+                        </p>
+                        <p>
+                            <span class="wizard-text-bold">Colors:</span>
+                            <span class="wizard-text-summary">{{ fashion_cores[data.core].Colors }}</span>
+                        </p>
+                    {% endif %}
+              
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Generate Outfits Section -->
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-2">
+                    <img src="static/icons/wizard.png" alt="Wizard Icon" class="wizard-icon-summary">
+                </div>
+                <div class="col-md-10" id="instruction-text">
+                    <p>Click the <strong>Generate Items</strong> button below to generate items based on the information you've provided.</p>
+                </div>
+            </div>
+        
+            <div class="mt-3" id="button-container-top">
+                <button id="generate_outfits_btn" class="btn btn-primary mb-3 btn-correct btn-narrow">Generate Items</button>
+            </div>
+
+            <!-- New Section for Displaying the Generated Image -->
+            <div class="card mb-4" id="generated_image_section" style="display: none;">
+                <div class="card-body right-card-body">
+                    <!-- New Shop for Items Button -->
+                    <img id="generated_image" src="" class="img-fluid" alt="Generated Outfit Image">
+    
+                    <div id="shop_keywords" class="mt-3"></div>
+                </div>
+            </div>      
+
+            <div class="mt-3" id="button-container-bottom">
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body right-card-body">
+                    <!-- Placeholder for generated outfits and selections -->
+                    <div id="outfit_display" class="wizard-text-summary">
+                        <div><em>Items will be displayed here...</em></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+    </div>
+</div>
+
+<!-- Loading Spinner Overlay -->
+<div id="loadingOverlay" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
+<script>
+    var data = {{ data | tojson }};
+    var fashionCores = {{ fashion_cores | tojson }};
+
+    window.onload = function () {
+        $("#loadingOverlay").fadeOut();
+    };
+
+    $(document).ready(function () {
+        $("#generate_outfits_btn").click(function () {
+            console.log("Generate Outfits button clicked");
+            showLoading();
+            generateOutfits();
+        });
+
+        // Regenerate Image Button Click Handler
+        $("#regenerate_image_btn").click(function () {
+            console.log("Regenerate Image button clicked");
+            showLoading();
+            regenerateImage();
+        });
+    });
+
+    function showLoading() {
+        $("#loadingOverlay").show();
+    }
+
+    function hideLoading() {
+        $("#loadingOverlay").hide();
+    }
+
+    function generateOutfits() {
+        $.ajax({
+            type: "POST",
+            url: "/generate_outfits",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                data = response.data
+                console.log("Backend data:", response);
+                console.log("Outfits generated:", response.validated_keywords);
+                displayOutfits(response.validated_keywords);
+                $("#instruction-text").html(
+                    "<p>Please select an item from each category.</p><p>Click the <strong>Generate Image</strong> button once you are ready.</p>"
+                );
+
+                $("#button-container-top").html(`
+                    <button id="submit_selection_btn" class="btn mb-3 btn-correct btn-narrow">Generate Image</button>
+                `);
+
+                $("#submit_selection_btn").click(function () {
+                    console.log("Submit button clicked");
+                    showLoading();
+
+                    submitSelection();
+                });
+                hideLoading(); // Hide loading spinner after success
+            },
+            error: function (request, status, error) {
+                console.error("Error generating outfits", error);
+                hideLoading(); // Hide loading spinner on error
+            }
+        });
+    }
+
+    function getShopKeywords() {
+        $.ajax({
+            type: "POST",
+            url: "/get_keywords_for_shopping",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ "image_url": $("#generated_image").attr("src") }), // Send image URL as context
+            success: function (response) {
+                data = response.data
+                console.log("Keywords generated:", response);
+                displayKeywords(response.outfit_shopping_keyword); // Use data.outfit_shopping_keyword to display
+                hideLoading();
+
+                $("#instruction-text").html(
+                    "<p>Voila! 🛍️ The magic continues—explore enchanting items tailored just for you!</p>"
+                );
+            },
+            error: function (request, status, error) {
+                console.error("Error generating keywords", error);
+                hideLoading();
+            }
+        });
+    }
+
+    function displayKeywords(outfitShoppingKeyword) {
+        const shopKeywordsDiv = $("#shop_keywords");
+        shopKeywordsDiv.empty(); // Clear previous keywords
+
+        // Loop through each category (top, bottom, accessory)
+        Object.keys(outfitShoppingKeyword).reverse().forEach(category => {
+            outfitShoppingKeyword[category].forEach(keyword => {
+                if (keyword !== "No items available.") { // Skip if "No items available."
+                    const button = `<button class="btn m-1 btn-shop-keywords" onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(keyword)}', '_blank')">${keyword}</button>`;
+                    shopKeywordsDiv.append(button);
+                }
+            });
+        });
+    }
+
+    function regenerateImage() {
+        $.ajax({
+            type: "POST",
+            url: "/regenerate_image",
+            dataType: "json",
+            success: function (response) {
+                const imageUrl = response.image_url;
+                if (imageUrl) {
+                    displayGeneratedImage(imageUrl); // Call displayGeneratedImage to update the UI with the regenerated image
+                    console.log("Image regenerated successfully:", imageUrl);
+                } else {
+                    alert("Failed to regenerate the image. Please try again.");
+                }
+                hideLoading(); // Hide loading spinner after regeneration
+            },
+            error: function (request, status, error) {
+                console.error("Error regenerating image", error);
+                hideLoading(); // Hide loading spinner on error
+            }
+        });
+    }
+
+    function submitSelection() {
+        const selectedTop = $("button[data-category='top'].selected-item").data("value");
+        const selectedBottom = $("button[data-category='bottom'].selected-item").data("value");
+        const selectedAccessory = $("button[data-category='accessory'].selected-item").data("value");
+
+        if (selectedTop && selectedBottom && selectedAccessory) {
+            const selectedOutfit = {
+                top: selectedTop,
+                bottom: selectedBottom,
+                accessory: selectedAccessory
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/submit_outfit_selection",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(selectedOutfit),
+                success: function (response) {
+                    console.log("generate image response", response)
+                    data = response.data;
+                    const imageUrl = response.image_url; // Adjusted to match img_url format
+
+                    if (imageUrl) {
+                        displayGeneratedImage(imageUrl);
+
+                        // Remove the outfit selection options and display the selected items
+                        $("#outfit_display").html(`
+                            <h4 class="card-title"><strong>Your Selected Items</strong></h4>
+                            <p><strong>Top:</strong> <span>${selectedOutfit.top}</span></p>
+                            <p><strong>Bottom:</strong> <span>${selectedOutfit.bottom}</span></p>
+                            <p><strong>Accessory:</strong> <span>${selectedOutfit.accessory}</span></p>
+                        `);
+
+
+                        $("#outfit_generation_text").hide();
+                    } else {
+                        alert("Failed to generate the image. Please try again.");
+                    }
+                    hideLoading(); // Hide loading spinner after success
+                    $("#instruction-text").html(
+                        "<p>Abracadabra! ✨ Your perfect outfit is here—handpicked and magical!</p><p>Click <strong>Shop for Items</strong> button to look for item keywords.</p>"
+                    );
+
+                    $("#button-container-top").html(`
+                        <button id="shop_for_items_btn" class="btn btn-secondary mb-3 btn-correct btn-narrow">Shop for Items</button>
+                    `);
+
+                    // Attach the click event for the "Shop for Items" button
+                    $("#shop_for_items_btn").click(function () {
+                        console.log("Shop for Items button clicked");
+                        showLoading();
+                        getShopKeywords();
+                    });
+
+                    // Populate button-container-bottom with the "Regenerate Image" button
+                    $("#button-container-bottom").html(`
+                        <button id="regenerate_image_btn_bottom" class="btn mt-3 mb-3 btn-incorrect btn-narrow">Regenerate Image</button>
+                    `);
+
+                    // Attach the click event for the "Regenerate Image" button
+                    $("#regenerate_image_btn_bottom").click(function () {
+                        console.log("Regenerate Image button clicked");
+                        showLoading();
+                        regenerateImage();
+                    });
+                },
+                error: function (request, status, error) {
+                    console.error("Error submitting outfit selection", error);
+                    hideLoading(); // Hide loading spinner on error
+                }
+            });
+        } else {
+            alert("Please select one item from each category.");
+            hideLoading(); // Hide loading spinner if validation fails
+        }
+    }
+
+
+    function displayOutfits(outfits) {
+        $("#outfit_display").empty();
+
+        // Function to handle selection and maintain button state
+        function handleSelection() {
+            // Remove selected class from all buttons in the same category
+            $(`button[data-category='${$(this).data("category")}']`).removeClass("selected-item");
+
+            // Add selected class to the clicked button
+            $(this).addClass("selected-item");
+
+            // Store the selected value
+            const category = $(this).data("category");
+            const value = $(this).data("value");
+            selectedItems[category] = value;
+            console.log("Selected items:", selectedItems);
+        }
+
+        // Helper function to create buttons
+        function createButtons(category, items) {
+            if (items.length > 0) {
+                $("#outfit_display").append(`<h5>${category.charAt(0).toUpperCase() + category.slice(1)}</h5>`);
+                items.forEach(function (item) {
+                    const button = $(`<button class="btn select-item m-2" data-category="${category}" data-value="${item}">${item}</button>`);
+                    button.click(handleSelection);
+                    $("#outfit_display").append(button);
+                });
+            }
+        }
+
+        // Display tops
+        createButtons("top", outfits.top);
+
+        // Display bottoms
+        createButtons("bottom", outfits.bottom);
+
+        // Display accessories
+        createButtons("accessory", outfits.accessory);
+    }
+
+
+
+    function displayGeneratedImage(imageUrl) {
+        // Append a timestamp to the URL to prevent caching
+        const cacheBustingUrl = `${imageUrl}?t=${new Date().getTime()}`;
+        $("#generated_image").attr("src", cacheBustingUrl);  // Update the image with cache-busting URL
+        $("#generated_image_section").show();
+
+        // Hide the "Outfit Generation" title
+        $("h5.card-title:contains('Outfit Generation')").hide();
+
+        // Clear the previous shop keywords
+        $("#shop_keywords").empty();  // Clear any previously generated buttons
+
+        // Scroll to the top of the page
+        scrollToTop();
+
+    }
+
+
+    function scrollToTop() {
+        $("html, body").animate({ scrollTop: 0 }, "slow");
+    }
+
+</script>
+
+{% endblock %}

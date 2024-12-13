@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 wizard-wardrobe-title">
+        Wardrobe Wizard
+    </div>
+</div>
+<div class="row wizard-description">
+    <div class="col-md-6 wizard-image">
+        <img src="static/icons/wizard.png" alt="Wizard Icon">
+
+    </div>
+    <div class="col-md-6 wizard-text">
+        Struggling to find the <strong>perfect outfit</strong> for your <strong>special occasion</strong> or <strong>daily routine</strong>?
+        <br>
+        <br>
+        <strong>Chat</strong> with <span class="highlight">Wardrobe Wizard</span> to generate outfit inspirations.
+        
+        <a href="/edit_details">
+            <button class="start-chat-button" onclick="redirectToChat()">Start Chat</button>
+        </a>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,614 @@
+* {
+    font-family: Garamond, serif;
+}
+
+
+.navbar {
+    display: flex;
+    /* Use flexbox for alignment */
+    justify-content: center;
+    /* Center items horizontally */
+    align-items: center;
+    /* Center items vertically */
+    padding: 1rem 0;
+    /* Adjust vertical padding for more height */
+    position: relative;
+    /* Allows proper positioning of the toggler */
+    background-color: #e2e2e2!important;
+    min-height: 60px;
+    /* Set a minimum height for consistency */
+}
+
+.navbar-brand {
+    position: absolute;
+    left: 50%;
+    text-align: center;
+    
+}
+
+
+.wizard-wardrobe-title {
+    font-size: 65px;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 70px;
+    padding-bottom: 50px;
+    color: #333;
+}
+
+
+/* Description Styling */
+.wizard-description {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+.card-title {
+    text-align: center; /* Horizontally center the text */
+    color: #333; /* Optional: Set the text color */
+  }
+
+.wizard-text {
+    font-size: 22px;
+    line-height: 1.8;
+    color: rgb(109, 109, 109);
+}
+
+.wizard-text-bold {
+    font-weight: bold;
+    color: #333;
+    
+}
+.wizard-text-summary {
+    color: rgb(109, 109, 109);
+}
+
+.wizard-text .highlight {
+    color: #8a4f39; /* Highlighted text color */
+    font-weight: bold;
+}
+
+/* Image Styling */
+.wizard-image img {
+    max-width: 60%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+
+
+/* Chat Container */
+.chat-container {
+    display: flex;
+    align-items: flex-start; /* Align the wizard and chatbox at the top */
+    justify-content: flex-start; /* Aligns everything to the left */
+    max-width: 900px;
+    gap: 20px; /* Add space between the wizard and chatbox */
+    margin: 0 auto; /* Center the entire container */
+}
+
+
+
+/* Wizard Icon Styling */
+.wizard-icon {
+    width: 60px; /* Adjust size */
+    height: auto;
+    margin-top: 100px; /* Optional: Adjust vertical alignment */
+}
+
+.wizard-icon-summary {
+    width: 60px; /* Adjust size */
+    height: auto;
+}
+/* Button Styling */
+.start-chat-button {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #3650f7;
+    width: 350px;
+    border: none;
+    margin-top: 40px;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+.start-chat-button:hover {
+    background-color: #274bb1;
+}
+
+
+/* Styling for the h1 and p inside the #wardrobe-wizard section */
+#wardrobe-wizard h1 {
+    font-size: 30px;
+    font-weight: bold;
+    /* Dark color for the title */
+    margin: 0;
+    text-align: center;
+}
+
+#wardrobe-wizard p {
+    font-size: 1.0rem;
+    /* Subtle color for the description */
+    margin-top: 10px;
+    margin-bottom: 0px;
+    text-align: center;
+    font-style: italic;
+}
+
+.upload-icon {
+    width: 50px; /* Adjust size as needed */
+    height: auto;
+    margin-bottom: 10px;
+    margin-top: 10px;
+
+}
+
+.send-submit {
+    width: 150px; /* Set fixed width */
+    padding: 10px; /* Adjust padding as needed */
+    margin: 0 auto; /* Center the button horizontally */
+    display: block; /* Ensures centering works */
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #3650f7;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn-shop-keywords {
+    background-color: #e0d9d4; /* Transparent background */
+    color: 333; /* Blue text */
+    border: 2px solid #e0d9d4; /* Blue border */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+}
+
+.btn-shop-keywords:hover {
+    background-color: #8c8078; /* Light blue background on hover */
+    color: #ffffff; /* Darker blue text on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+    border: 2px solid #8c8078;
+   
+}
+
+.column-spacing-summary {
+    gap: 20px; /* Adjust the spacing value as needed */
+}
+
+.select-core-btn {
+    background-color: #ffffff; /* Transparent background */
+    color: #333; /* Blue text */
+    border: 2px solid #ffffff; /* Blue border */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+}
+
+.select-core-btn:hover {
+    background-color: #3650f7; /* Light blue background on hover */
+    color: #ffffff; /* Darker blue text on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+    border: 2px solid #3650f7;
+}
+
+.select-item {
+    background-color: #e0d9d4; /* Transparent background */
+    color: #333;
+    border: 2px solid #e0d9d4;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+}
+
+.select-item:hover {
+    background-color: #8c8078; /* Light blue background on hover */
+    color: #ffffff; /* Darker blue text on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+    border: 2px solid #8c8078;
+}
+
+.btn-correct {
+    background-color: #3650f7 !important; /* Button background color */
+    color: #ffffff !important; /* Text color (white) */
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-correct:hover {
+    background-color: #274bb1 !important; /* Darker blue on hover */
+    color: #ffffff !important; /* Enforce white text */
+    transform: scale(1.05);
+}
+
+/* Incorrect Button */
+.btn-incorrect {
+    background-color: #ffffff !important;
+    color: #3650f7 !important;
+    border: 2px solid #3650f7 !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    padding: 10px 20px !important;
+    border-radius: 5px !important;
+    cursor: pointer !important;
+    text-align: center !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-incorrect:hover {
+    background-color: #e0eaff !important; /* Light blue background on hover */
+    color: #274bb1 !important;
+    transform: scale(1.05) !important;
+}
+
+
+/* Center the uploaded image */
+.centered-image {
+    display: block; /* Ensures the image behaves like a block element */
+    margin: 10px auto; /* Centers the image horizontally */
+    max-width: 100%; /* Prevents the image from overflowing */
+}
+
+.send-submit:disabled {
+    background-color: #a0a0a0; /* Lighter gray for disabled state */
+    color: #ffffff; /* Keep text readable */
+    cursor: not-allowed; /* Show 'not-allowed' cursor */
+    opacity: 0.7; /* Make it look disabled visually */
+}
+
+.send-submit:hover {
+    background-color: #274bb1;
+    color: #ffffff;
+}
+
+
+/* Optional styling for the section background */
+#wardrobe-wizard {
+    padding-top: 20px;
+    text-align: center;
+    /* Center the text */
+    margin: 0 auto;
+    /* Center the whole section horizontally */
+    max-width: 600px;
+    /* Optional: Set a max width for better layout control */
+
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+/* Base styles */
+body {
+    background-color: #f4f4f6;
+    color: #2d2d2d;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* Container setup */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Card styling */
+.card {
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    background-color: #e0d9d4;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.left-card-body {
+    background-color: #f4f4f6;
+    border: 1px solid rgb(234, 233, 233);
+    border-radius: 4px; /* Optional: rounded corners */
+    padding: 10px; /* Optional: spacing inside the border */
+}
+
+.right-card-body {
+    background-color:#ffffff;
+    border: 1px solid #ffffff; /* Light gray border */
+    border-radius: 4px; /* Optional: rounded corners */
+    padding: 10px; /* Optional: spacing inside the border */
+}
+
+
+/* Headers */
+.subheadings {
+    color: rgb(109, 109, 109);
+    text-align: center;
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+
+h5 {
+    color: #333;
+}
+
+/* Chatbox styling */
+.chatbox {
+    flex: 1;
+    border-radius: 10px;
+    background-color: rgb(171, 171, 171);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.chat-window {
+    overflow-y: auto;
+    max-height: 600px;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #ffffff;
+}
+
+/* Message bubbles */
+.message {
+    margin-bottom: 15px;
+}
+
+.message.system {
+    background-color: rgb(234, 233, 233);
+    padding: 12px;
+    border-radius: 10px;
+    max-width: 75%;
+}
+
+.message.user {
+    background-color: #e0d9d4;
+    padding: 12px;
+    border-radius: 10px;
+    max-width: 75%;
+    margin-left: auto;
+}
+
+.message-content {
+    font-size: 15px;
+}
+
+/* Input styling */
+textarea,
+select,
+input {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    margin-top: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    background-color: #ffffff;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: border-color 0.2s ease;
+}
+
+textarea:focus,
+select:focus,
+input:focus {
+    border-color: #80bdff;
+    outline: none;
+}
+
+/* Button styles */
+button {
+    background-color: #007bff;
+    border: none;
+    color: #ffffff;
+    padding: 12px;
+    font-size: 15px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:active {
+    background-color: #004085;
+}
+
+/* Image styling */
+.fashion-core-img {
+    border-radius: 8px;
+    max-width: 40%;
+    height: auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Spinner overlay */
+#loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    .message.system,
+    .message.user {
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    textarea,
+    select,
+    input {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+/* Hide default radio buttons */
+input[type="radio"] {
+    display: none;
+    /* Hide the default radio button */
+}
+
+/* Center the entire #outfit_display container */
+#outfit_display {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center align all child elements horizontally */
+    text-align: center;
+}
+
+/* Style labels to look like clickable cards */
+#outfit_display label {
+    display: block;
+    padding: 10px 15px; 
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #333;
+    background-color: #f9f9f9;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 80%; /* Ensure consistent width */
+    max-width: 300px; /* Limit the maximum width for wider screens */
+}
+
+/* Add hover effect for better interactivity */
+#outfit_display label:hover {
+    background-color: #007bff;
+    color: #ffffff;
+    border-color: #007bff;
+}
+
+/* When radio button is selected, change the label appearance */
+input[type="radio"]:checked+label {
+    background-color: #007bff;
+    color: #ffffff;
+    border-color: #007bff;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+/* Add margin to sections */
+#outfit_display h5 {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    width: 100%; /* Ensures the header spans full width */
+    text-align: center; /* Centers the text */
+}
+
+/* Add spacing between the sections */
+#outfit_display div {
+    margin-bottom: 15px;
+}
+
+/* Media query to adjust card width for mobile view */
+@media (max-width: 768px) {
+    #outfit_display label {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+.drop-area {
+    border: 2px dashed #ccc;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.drop-area.highlight {
+    border-color: #83a3e3;
+}
+
+.file-input {
+    display: none;
+    /* Hide the file input */
+}
+
+.image-preview {
+    display: block;
+    /* Make the image a block-level element */
+    margin: 10px auto;
+    /* Center the image horizontally */
+    max-width: 100%;
+    /* Ensure the image doesn’t exceed container width */
+    border-radius: 10px;
+    /* Apply rounded corners */
+}
+
+.selected-item {
+    background-color: #8c8078;
+    /* Selected background color */
+    color: #ffffff;
+    /* Selected text color */
+    font-weight: bold;
+    padding: 6px;
+    border-radius: 4px;
+    display: inline-block;
+    /* Ensures padding and border-radius apply correctly */
+}
+
+.btn-narrow {
+    width: 400px; /* Adjust width as needed */
+    text-align: center;
+}
+
+#button-container-top {
+    display: flex;
+    justify-content: center; /* Centers the button horizontally */
+    align-items: center; /* Centers the button vertically if needed */
+}
+
+#button-container-bottom {
+    display: flex;
+    justify-content: center; /* Centers the button horizontally */
+    align-items: center; /* Centers the button vertically if needed */
+}
+
