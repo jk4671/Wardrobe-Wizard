@@ -9,7 +9,7 @@ Struggling to find the perfect outfit for your daily routine or a special occasi
 
 ## Demo
 
-[https://youtu.be/ejwLcEUHmGw?si=H6Gbi-cxx7vuA5Gi](https://youtu.be/3ZiNzpHeico?si=deRZucvcDhfR3pnv)
+https://youtu.be/3ZiNzpHeico?si=z7XC2Dde78JV60IL
 
 ## Tools used
 
