@@ -18,6 +18,7 @@ OpenAI, Vertex AI, HTML, CSS, JavaScript, Bootstrap, jQuery, Flask
 ## Requirements
 
 OpenAI API
+
 Vertex AI API
 
 ## Steps to run the program
