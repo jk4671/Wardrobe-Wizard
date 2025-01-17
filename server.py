@@ -12,8 +12,8 @@ import re
 load_dotenv()
 
 # Initialize Google Cloud Vertex AI
-PROJECT_ID = "YOUR PROJECT ID"
-LOCATION = "YOUR LOCATION"
+PROJECT_ID = "gen-ai-441105"
+LOCATION = "us-central1"
 vertexai.init(project=PROJECT_ID, location=LOCATION)
 
 # Initialize Flask app
